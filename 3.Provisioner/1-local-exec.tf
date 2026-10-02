@@ -9,5 +9,10 @@ resource "aws_instance" "VM-05" {
   provisioner "local-exec" {
     command = "echo ${self.private_ip} >> private_ip.txt"
   }
-
 }
+
+# resource "null_resource" "sshkey" {
+#   provisioner "local-exec" {
+#     command = "ssh-keygen -f sshkey -N ''"
+#   }
+# }

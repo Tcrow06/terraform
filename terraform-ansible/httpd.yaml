@@ -1,0 +1,45 @@
+---
+- name: Configure Apache Web Server
+  hosts: webservers
+  become: true
+
+  tasks:
+    - name: Install required packages
+      ansible.builtin.yum:
+        name:
+          - wget
+          - unzip
+          - httpd
+        state: present
+
+    - name: Ensure Apache is started and enabled
+      ansible.builtin.service:
+        name: httpd
+        state: started
+        enabled: true
+
+    - name: Download website template
+      ansible.builtin.get_url:
+        url: https://www.tooplate.com/zip-templates/2117_infinite_loop.zip
+        dest: /tmp/2117_infinite_loop.zip
+        mode: "0644"
+
+    - name: Extract website template
+      ansible.builtin.unarchive:
+        src: /tmp/2117_infinite_loop.zip
+        dest: /tmp/
+        remote_src: true
+
+    - name: Copy website files to Apache document root
+      ansible.builtin.copy:
+        src: /tmp/2117_infinite_loop/
+        dest: /var/www/html/
+        remote_src: true
+        owner: apache
+        group: apache
+        mode: preserve
+
+    - name: Restart Apache
+      ansible.builtin.service:
+        name: httpd
+        state: restarted
